@@ -28,6 +28,9 @@ using dict_delete_func = void (*)(void*);
 
 namespace zeek {
 
+// from Func.h, renders the script call stack.
+extern std::string render_call_stack();
+
 template<typename T>
 class Dictionary;
 
@@ -1202,9 +1205,18 @@ private:
         if ( insert_distance ) {
             *insert_distance = i - begin;
 
-            if ( *insert_distance >= detail::TOO_FAR_TO_REACH )
-                reporter->FatalErrorWithCore("Dictionary (size %d) insertion distance too far: %d", Length(),
-                                             *insert_distance);
+            if ( *insert_distance >= detail::TOO_FAR_TO_REACH ) {
+                auto rcs = render_call_stack();
+                Dump(/*level=*/0);
+                auto loc = detail::GetCurrentLocation();
+                reporter->RuntimeError(
+                    &loc,
+                    "Dictionary (size %d) insertion distance too far: %d "
+                    "script_call_stack=%s. If you see this error and want "
+                    "to help us debug this, please visit "
+                    "https://community.zeek.org/t/hitting-error-dictionary-insertion-distance-too-far-65535",
+                    Length(), *insert_distance, rcs.c_str());
+            }
         }
 
         return -1;
