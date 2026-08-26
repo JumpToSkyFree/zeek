@@ -856,31 +856,31 @@ public:
         int distances[DICT_NUM_DISTANCES];
         int max_distance = 0;
         DistanceStats(max_distance, distances, DICT_NUM_DISTANCES);
-        printf(
-            "cap %'7d ent %'7d %'-7d load %.2f max_dist %2d key/ent %3d lg "
-            "%2d remaps %1d remap_end %4d ",
-            Capacity(), Length(), MaxLength(), static_cast<double>(Length()) / (table ? Capacity() : 1), max_distance,
-            key_size / (Length() ? Length() : 1), log2_buckets, remaps, remap_end);
+        fprintf(stderr,
+                "cap %'7d ent %'7d %'-7d load %.2f max_dist %2d key/ent %3d lg "
+                "%2d remaps %1d remap_end %4d ",
+                Capacity(), Length(), MaxLength(), static_cast<double>(Length()) / (table ? Capacity() : 1),
+                max_distance, key_size / (Length() ? Length() : 1), log2_buckets, remaps, remap_end);
         if ( Length() > 0 ) {
             for ( size_t i = 0; i < DICT_NUM_DISTANCES - 1; i++ )
-                printf("[%zu]%2d%% ", i, 100 * distances[i] / Length());
-            printf("[%zu+]%2d%% ", DICT_NUM_DISTANCES - 1, 100 * distances[DICT_NUM_DISTANCES - 1] / Length());
+                fprintf(stderr, "[%zu]%2d%% ", i, 100 * distances[i] / Length());
+            fprintf(stderr, "[%zu+]%2d%% ", DICT_NUM_DISTANCES - 1, 100 * distances[DICT_NUM_DISTANCES - 1] / Length());
         }
         else
-            printf("\n");
+            fprintf(stderr, "\n");
 
-        printf("\n");
+        fprintf(stderr, "\n");
         if ( level >= 1 ) {
-            printf("%-10s %1s %-10s %-4s %-4s %-10s %-18s %-2s\n", "Index", "*", "Bucket", "Dist", "Off", "Hash",
-                   "FibHash", "KeySize");
+            fprintf(stderr, "%-10s %1s %-10s %-4s %-4s %-10s %-18s %-2s\n", "Index", "*", "Bucket", "Dist", "Off",
+                    "Hash", "FibHash", "KeySize");
             for ( int i = 0; i < Capacity(); i++ )
                 if ( table[i].Empty() )
-                    printf("%'10d \n", i);
+                    fprintf(stderr, "%'10d \n", i);
                 else
-                    printf("%'10d %1s %'10d %4d %4d 0x%08x 0x%016" PRIx64 "(%3ld) %2d\n", i,
-                           (i <= remap_end ? "*" : ""), BucketByPosition(i), table[i].distance,
-                           OffsetInClusterByPosition(i), uint(table[i].hash), FibHash(table[i].hash),
-                           FibHash(table[i].hash) & 0xFF, table[i].key_size);
+                    fprintf(stderr, "%'10d %1s %'10d %4d %4d 0x%08x 0x%016" PRIx64 "(%3ld) %2d\n", i,
+                            (i <= remap_end ? "*" : ""), BucketByPosition(i), table[i].distance,
+                            OffsetInClusterByPosition(i), uint(table[i].hash), FibHash(table[i].hash),
+                            FibHash(table[i].hash) & 0xFF, table[i].key_size);
         }
     }
 
